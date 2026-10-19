@@ -87,7 +87,7 @@ func TestCLIReviewProjectionHasNoAuthority(t *testing.T) {
 	dir := t.TempDir()
 	head := strings.Repeat("a", 40)
 	result, ledger := filepath.Join(dir, "result.json"), filepath.Join(dir, "ledger.json")
-	if err := os.WriteFile(result, []byte(`{"head_sha":"`+head+`","risk_assessment":{"score":1,"level":"low"}}`), 0600); err != nil {
+	if err := os.WriteFile(result, []byte(`{"action":"approve","head_sha":"`+head+`","risk_assessment":{"score":1,"level":"low"}}`), 0600); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(ledger, []byte(`{"version":2,"action":"approve","findings":[]}`), 0600); err != nil {

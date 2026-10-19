@@ -47,6 +47,10 @@ func ProjectReview(result, ledger []byte, expectedHead string) (Review, error) {
 	default:
 		return out, fmt.Errorf("invalid_review_action")
 	}
+	var action string
+	if json.Unmarshal(fields["action"], &action) != nil || action != l.Action {
+		return out, fmt.Errorf("review_action_mismatch")
+	}
 	seen := map[string]bool{}
 	out.Findings = []Finding{}
 	for _, f := range *l.Findings {

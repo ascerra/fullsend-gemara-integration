@@ -12,7 +12,7 @@ import (
 
 func TestProjectReview(t *testing.T) {
 	head := strings.Repeat("a", 40)
-	result := fmt.Sprintf(`{"head_sha":%q,"risk_assessment":{"score":1,"level":"low"},"body":"ignored model text"}`, head)
+	result := fmt.Sprintf(`{"action":"approve","head_sha":%q,"risk_assessment":{"score":1,"level":"low"},"body":"ignored model text"}`, head)
 	ledger := `{"version":2,"action":"approve","findings":[{"id":"f1","severity":"low","category":"bug","file":null},{"id":"f2","severity":"high","category":"security","file":"code.go"}],"dispositions":[{"id":"f2","status":"resolved_by_change"}]}`
 	r, err := ProjectReview([]byte(result), []byte(ledger), head)
 	if err != nil || !r.Completed || r.Action != "approve" || r.Risk == nil || *r.Risk != 1 || len(r.Findings) != 2 || r.Findings[0].Status != "open" || r.Findings[1].Status != "resolved_by_change" {
@@ -20,6 +20,7 @@ func TestProjectReview(t *testing.T) {
 	}
 	for _, tc := range []struct{ name, result, ledger, head string }{
 		{"stale-head", result, ledger, strings.Repeat("b", 40)},
+		{"conflicting-action", strings.Replace(result, `"action":"approve"`, `"action":"request-changes"`, 1), ledger, head},
 		{"missing-ledger", result, `{}`, head},
 		{"null-findings", result, `{"version":2,"action":"approve","findings":null}`, head},
 		{"duplicate-keys", result, `{"version":2,"version":2,"action":"approve","findings":[]}`, head},
@@ -34,7 +35,7 @@ func TestProjectReview(t *testing.T) {
 		})
 	}
 	for _, risk := range []string{`null`, `{}`, `{"score":1,"level":"low","degraded":false}`, `{"score":1,"level":"high"}`, `{"score":0,"level":"low"}`, `{"score":1.5,"level":"low"}`} {
-		r, err := ProjectReview([]byte(fmt.Sprintf(`{"head_sha":%q,"risk_assessment":%s}`, head, risk)), []byte(ledger), head)
+		r, err := ProjectReview([]byte(fmt.Sprintf(`{"action":"approve","head_sha":%q,"risk_assessment":%s}`, head, risk)), []byte(ledger), head)
 		if err != nil || r.Risk != nil || len(r.Findings) != 2 {
 			t.Fatalf("unknown risk was invented or findings lost: %+v %v", r, err)
 		}
@@ -65,7 +66,7 @@ func TestReviewProjectionPolicyParity(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			result := []byte(fmt.Sprintf(`{"head_sha":%q,"risk_assessment":{"score":1,"level":"low"}}`, e.Subject.Head))
+			result := []byte(fmt.Sprintf(`{"action":"approve","head_sha":%q,"risk_assessment":{"score":1,"level":"low"}}`, e.Subject.Head))
 			for _, tc := range []struct{ ledger, decision string }{
 				{`{"version":2,"action":"approve","findings":[]}`, "eligible"},
 				{`{"version":2,"action":"approve","findings":[{"id":"f1","severity":"low","category":"bug","file":null}]}`, "hold"},
