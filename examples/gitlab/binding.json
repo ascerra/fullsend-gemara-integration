@@ -1,0 +1,32 @@
+{
+  "schema_version": "owner-binding/v1",
+  "identity": {
+    "forge": "gitlab",
+    "host": "gitlab.example.test",
+    "project_id": "12345",
+    "repository": "example/consumer",
+    "target_branch": "main"
+  },
+  "allowed_paths": [
+    "docs/**"
+  ],
+  "governed_paths": [
+    ".github/**",
+    ".gitlab/**",
+    ".gitlab-ci.yml",
+    ".fullsend/**",
+    ".gemara/**",
+    "policy/**",
+    "tests/**",
+    "AGENTS.md",
+    "CODEOWNERS"
+  ],
+  "required_checks": [
+    "documentation-contract"
+  ],
+  "review_workflow": "fullsend-review",
+  "maximum_risk": 1,
+  "maximum_evidence_age_seconds": 600,
+  "owner_grant_enabled": true,
+  "owner_grant_expires_at": "2026-10-22T18:00:00Z"
+}

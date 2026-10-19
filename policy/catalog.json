@@ -1,0 +1,117 @@
+{
+  "title": "Owner-controlled merge requirements",
+  "metadata": {
+    "id": "owner-merge-controls",
+    "type": "ControlCatalog",
+    "gemara-version": "1.5.0",
+    "version": "0.1.0",
+    "description": "Five forge-independent owner requirements; no production authorization.",
+    "author": {
+      "id": "fullsend-gemara-integration",
+      "name": "Fullsend Gemara integration",
+      "type": "Software Assisted"
+    },
+    "draft": true,
+    "applicability-groups": [
+      {
+        "id": "candidate",
+        "title": "Candidate",
+        "description": "Candidate evaluation"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "id": "candidate",
+      "title": "Candidate eligibility",
+      "description": "Owner-controlled candidate requirements"
+    }
+  ],
+  "controls": [
+    {
+      "id": "OWNER-SCOPE",
+      "title": "Within owner delegation",
+      "objective": "The change MUST stay within owner-approved paths and change types. Change size is not an eligibility signal.",
+      "group": "candidate",
+      "state": "Active",
+      "assessment-requirements": [
+        {
+          "id": "OWNER-SCOPE-1",
+          "text": "The change MUST stay within owner-approved paths and change types. Change size is not an eligibility signal.",
+          "applicability": [
+            "candidate"
+          ],
+          "state": "Active"
+        }
+      ]
+    },
+    {
+      "id": "REVIEW-CLEAR",
+      "title": "No unresolved review concerns",
+      "objective": "Review MUST be complete and approved, with acceptable risk and no unresolved findings.",
+      "group": "candidate",
+      "state": "Active",
+      "assessment-requirements": [
+        {
+          "id": "REVIEW-CLEAR-1",
+          "text": "Review MUST be complete and approved, with acceptable risk and no unresolved findings.",
+          "applicability": [
+            "candidate"
+          ],
+          "state": "Active"
+        }
+      ]
+    },
+    {
+      "id": "CHECKS-PASS",
+      "title": "Required checks pass",
+      "objective": "Every configured required check MUST succeed for the current candidate revision.",
+      "group": "candidate",
+      "state": "Active",
+      "assessment-requirements": [
+        {
+          "id": "CHECKS-PASS-1",
+          "text": "Every configured required check MUST succeed for the current candidate revision.",
+          "applicability": [
+            "candidate"
+          ],
+          "state": "Active"
+        }
+      ]
+    },
+    {
+      "id": "EVIDENCE-CURRENT",
+      "title": "Evidence belongs to this revision",
+      "objective": "Evidence MUST refer to the configured repository, candidate, target and policy, and the trusted publication context. Live authenticity requires a forge adapter.",
+      "group": "candidate",
+      "state": "Active",
+      "assessment-requirements": [
+        {
+          "id": "EVIDENCE-CURRENT-1",
+          "text": "Evidence MUST refer to the configured repository, candidate, target and policy, and the trusted publication context. Live authenticity requires a forge adapter.",
+          "applicability": [
+            "candidate"
+          ],
+          "state": "Active"
+        }
+      ]
+    },
+    {
+      "id": "PROTECTIONS-ACTIVE",
+      "title": "Protected merge requirements hold",
+      "objective": "The target MUST remain protected, the policy gate required, blocking discussions resolved and bypass disabled.",
+      "group": "candidate",
+      "state": "Active",
+      "assessment-requirements": [
+        {
+          "id": "PROTECTIONS-ACTIVE-1",
+          "text": "The target MUST remain protected, the policy gate required, blocking discussions resolved and bypass disabled.",
+          "applicability": [
+            "candidate"
+          ],
+          "state": "Active"
+        }
+      ]
+    }
+  ]
+}

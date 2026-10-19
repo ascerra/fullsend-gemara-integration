@@ -1,0 +1,34 @@
+{
+  "cue": {
+    "version": "v0.17.1",
+    "archive_url": "https://github.com/cue-lang/cue/releases/download/v0.17.1/cue_v0.17.1_linux_amd64.tar.gz",
+    "archive_sha256": "a39b0c97695069d95d276d99be0f5dbabb081d801bfdc9ba49b76efaf94e2369",
+    "binary_sha256": "b1e73b13d87ed1812de7626108324600f478b9b862bc926f9a360ffd01d19297"
+  },
+  "gemara": {
+    "version": "v1.5.0",
+    "commit": "9d36c253484d14922010252bfffe58bdcd49a144",
+    "archive_url": "https://codeload.github.com/gemaraproj/gemara/tar.gz/9d36c253484d14922010252bfffe58bdcd49a144",
+    "archive_sha256": "14e4b5a0558833b67259ea1b6271505091ef72418d5cbe722d2782346498b13b",
+    "schema_files": {
+      "LICENSE": "61af2cc3e1ae43a3726330458213caf02af0b2cf2259c3de7595cc4dba459d32",
+      "auditlog.cue": "1c6d611bf0ca10e82e613134ac6b2bf1659e84fc18b6c1707bc585ad3295ab37",
+      "capabilitycatalog.cue": "3c12ca7e6ba801c14544103bda6f6127353c65af83e576a31b2cb56e566a1236",
+      "collections.cue": "ff0baddaec7c96d91afd4881f2f1815d8d357228b4a7494e1a02502cdf8c2055",
+      "controlcatalog.cue": "fbd8f99d001543859595fc27217af34004f516c54d1e060e7980cf233c571888",
+      "enforcementlog.cue": "f3184de931eeaa37623cc031b6f92e9a658a3af2aa2afbcf10a2fe3b64ee6840",
+      "entities.cue": "c3bae558731b96c677d702c65eca468365f11325b18c981ab1cfa1b6a0859d22",
+      "evaluationlog.cue": "188eda262f081fe5deaa53cf4880c0f8dba30dab72a35f0c717e5dd9985d5c26",
+      "guidancecatalog.cue": "2866a02d638ae1569846aca9731e04da7588b21f452e493536acc1591e6c2f5f",
+      "lexicon.cue": "eef8a1300edd655c443e2d7441c57ffa112d2e48ec142728757555aed0e6f4ad",
+      "mapping_inline.cue": "a8b4af79458c3ef9e3d768af4f0ce5e169571a8e6b72487e82da419b58115706",
+      "mappingdocument.cue": "e921f6cb171833c2e60e0280b6ea46acd600245ff7f1c6c8b2ef279d6a3ca6fc",
+      "metadata.cue": "c1addedd4edfe7cf442bde447c1d32f7097cac64bfe6cc2f6883be4a97846c74",
+      "policy.cue": "179592408786f66def97385c034c7b9270b50a38ad2b3346074719702c32ae76",
+      "principlecatalog.cue": "a0803ceecca049b3d39dbee05a7bc5046eb041cb5c8fcb7043eec9e9fd7873e6",
+      "riskcatalog.cue": "6ef897af776e50689446a5f230e2d9e73ea2e813334a65175c0c78669a07276a",
+      "threatcatalog.cue": "9620993ddf7292688b1b897a08287e8b2d323b7e98cce1400457cd5f6c90aaa5",
+      "vectorcatalog.cue": "b2ec4f9bd359a84a77d21c98b1c3174ef104ab965d6d25a4dfcfe38a8f5d61e2"
+    }
+  }
+}

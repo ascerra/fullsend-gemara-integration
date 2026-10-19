@@ -1,0 +1,41 @@
+name: Integration checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ''
+      GITHUB_TOKEN: ''
+      GOTOOLCHAIN: local
+      GOTELEMETRY: 'off'
+      CGO_ENABLED: '0'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.26.6'
+          cache: false
+      - name: Verify pinned dependencies
+        run: |
+          go mod download
+          go mod verify
+      - name: Check formatting and implementation
+        run: |
+          test -z "$(gofmt -l types.go evaluate.go fixtures.go cases.go evaluate_test.go cmd/gemara-owner/main.go cmd/gemara-owner/main_test.go)"
+          go test ./...
+          go vet ./...
+      - name: Run paired fixture demonstrations
+        run: |
+          mkdir -p out
+          go run ./cmd/gemara-owner demo
+          go run ./cmd/gemara-owner demo --json > out/results.json
+      - name: Validate official Gemara documents and native logs
+        run: python3 scripts/validate_artifacts.py out/results.json

@@ -1,0 +1,87 @@
+{
+  "schema_version": "forge-fixture/v1",
+  "source_kind": "synthetic-fixture",
+  "forge": "gitlab",
+  "gitlab": {
+    "project": {
+      "id": 12345,
+      "path_with_namespace": "example/consumer",
+      "host": "gitlab.example.test"
+    },
+    "merge_request": {
+      "iid": 7,
+      "state": "opened",
+      "draft": false,
+      "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "target_branch": "main"
+    },
+    "target_branch_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "observation": {
+    "source_kind": "synthetic-fixture",
+    "subject": {
+      "identity": {
+        "forge": "gitlab",
+        "host": "gitlab.example.test",
+        "project_id": "12345",
+        "repository": "example/consumer",
+        "target_branch": "main"
+      },
+      "change": 7,
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "target_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+      "binding_sha256": "fa52ccbeed80f11b1a0f4aad46222f6397bf16d2ecfdbffc3e2f7cc9b079b259"
+    },
+    "collected_at": "2026-10-19T17:59:00Z",
+    "open": true,
+    "draft": false,
+    "files": [
+      {
+        "path": "docs/example-feature.md",
+        "kind": "modified",
+        "mode": "100644"
+      }
+    ],
+    "review": {
+      "completed": true,
+      "action": "approve",
+      "risk_score": 1,
+      "findings": []
+    },
+    "checks": [
+      {
+        "name": "documentation-contract",
+        "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "status": "success"
+      }
+    ],
+    "publication": {
+      "workflow": "fullsend-review",
+      "run_id": "1001",
+      "attempt": 1,
+      "subject": {
+        "identity": {
+          "forge": "gitlab",
+          "host": "gitlab.example.test",
+          "project_id": "12345",
+          "repository": "example/consumer",
+          "target_branch": "main"
+        },
+        "change": 7,
+        "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "target_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+        "binding_sha256": "fa52ccbeed80f11b1a0f4aad46222f6397bf16d2ecfdbffc3e2f7cc9b079b259"
+      },
+      "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+    },
+    "protections": {
+      "protected_target": true,
+      "required_policy_gate": true,
+      "discussions_resolved": true,
+      "bypass_enabled": false,
+      "merge_mechanism": "merge-train"
+    }
+  }
+}

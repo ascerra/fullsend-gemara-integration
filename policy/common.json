@@ -1,0 +1,123 @@
+{
+  "title": "Common owner-controlled merge policy",
+  "metadata": {
+    "id": "owner-merge-common",
+    "type": "Policy",
+    "gemara-version": "1.5.0",
+    "version": "0.1.0",
+    "description": "Shared assessment definitions; consuming owners supply repository bindings.",
+    "author": {
+      "id": "fullsend-gemara-integration",
+      "name": "Fullsend Gemara integration",
+      "type": "Software Assisted"
+    },
+    "draft": true,
+    "mapping-references": [
+      {
+        "id": "owner-merge-controls",
+        "title": "Owner-controlled merge requirements",
+        "version": "0.1.0"
+      }
+    ]
+  },
+  "contacts": {
+    "responsible": [
+      {
+        "name": "Integration maintainers"
+      }
+    ],
+    "accountable": [
+      {
+        "name": "Consuming repository owner"
+      }
+    ]
+  },
+  "scope": {
+    "in": {
+      "technologies": [
+        "source-control"
+      ]
+    }
+  },
+  "imports": {
+    "catalogs": [
+      {
+        "reference-id": "owner-merge-controls"
+      }
+    ]
+  },
+  "adherence": {
+    "assessment-plans": [
+      {
+        "id": "owner-scope-plan",
+        "requirement-id": "OWNER-SCOPE-1",
+        "frequency": "every evaluation",
+        "evaluation-methods": [
+          {
+            "id": "evaluate-OWNER-SCOPE",
+            "type": "Intent",
+            "mode": "Automated",
+            "required": true
+          }
+        ],
+        "evidence-requirements": "Revision-bound normalized observations with explicit provenance; fixtures are not live attestations."
+      },
+      {
+        "id": "review-clear-plan",
+        "requirement-id": "REVIEW-CLEAR-1",
+        "frequency": "every evaluation",
+        "evaluation-methods": [
+          {
+            "id": "evaluate-REVIEW-CLEAR",
+            "type": "Intent",
+            "mode": "Automated",
+            "required": true
+          }
+        ],
+        "evidence-requirements": "Revision-bound normalized observations with explicit provenance; fixtures are not live attestations."
+      },
+      {
+        "id": "checks-pass-plan",
+        "requirement-id": "CHECKS-PASS-1",
+        "frequency": "every evaluation",
+        "evaluation-methods": [
+          {
+            "id": "evaluate-CHECKS-PASS",
+            "type": "Intent",
+            "mode": "Automated",
+            "required": true
+          }
+        ],
+        "evidence-requirements": "Revision-bound normalized observations with explicit provenance; fixtures are not live attestations."
+      },
+      {
+        "id": "evidence-current-plan",
+        "requirement-id": "EVIDENCE-CURRENT-1",
+        "frequency": "every evaluation",
+        "evaluation-methods": [
+          {
+            "id": "evaluate-EVIDENCE-CURRENT",
+            "type": "Intent",
+            "mode": "Automated",
+            "required": true
+          }
+        ],
+        "evidence-requirements": "Revision-bound normalized observations with explicit provenance; fixtures are not live attestations."
+      },
+      {
+        "id": "protections-active-plan",
+        "requirement-id": "PROTECTIONS-ACTIVE-1",
+        "frequency": "every evaluation",
+        "evaluation-methods": [
+          {
+            "id": "evaluate-PROTECTIONS-ACTIVE",
+            "type": "Intent",
+            "mode": "Automated",
+            "required": true
+          }
+        ],
+        "evidence-requirements": "Revision-bound normalized observations with explicit provenance; fixtures are not live attestations."
+      }
+    ]
+  }
+}
