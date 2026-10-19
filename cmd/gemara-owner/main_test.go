@@ -76,9 +76,32 @@ func TestDemoRunsAllPairedCases(t *testing.T) {
 }
 
 func TestCLIRejectsMissingTimeAndUnknownCommands(t *testing.T) {
-	for _, args := range [][]string{{"evaluate-fixture"}, {"merge"}, {"demo", "unexpected"}} {
+	for _, args := range [][]string{{"evaluate-fixture"}, {"project-review"}, {"merge"}, {"demo", "unexpected"}} {
 		if _, err := invoke(t, args...); err == nil {
 			t.Fatal("invalid command succeeded")
 		}
+	}
+}
+
+func TestCLIReviewProjectionHasNoAuthority(t *testing.T) {
+	dir := t.TempDir()
+	head := strings.Repeat("a", 40)
+	result, ledger := filepath.Join(dir, "result.json"), filepath.Join(dir, "ledger.json")
+	if err := os.WriteFile(result, []byte(`{"action":"approve","head_sha":"`+head+`","risk_assessment":{"score":1,"level":"low"}}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(ledger, []byte(`{"version":2,"action":"approve","findings":[]}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	out, err := invoke(t, "project-review", "--result", result, "--ledger", ledger, "--head", head)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var r map[string]any
+	if json.Unmarshal([]byte(out), &r) != nil || r["schema_version"] != "review-projection/v1" || r["head_sha"] != head || r["authorization"] != "none" || r["mutation_permitted"] != false {
+		t.Fatal("projection claimed authority or lost its identity")
+	}
+	if _, err := invoke(t, "project-review", "--result", result, "--ledger", ledger, "--head", strings.Repeat("b", 40)); err == nil {
+		t.Fatal("stale head accepted")
 	}
 }

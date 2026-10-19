@@ -56,9 +56,39 @@ func evaluate(binding, fixture, scenario string, now time.Time) (integration.Rep
 
 func run() error {
 	if len(os.Args) < 2 {
-		return fmt.Errorf("usage: gemara-owner demo | evaluate-fixture --binding FILE --fixture FILE --at RFC3339")
+		return fmt.Errorf("usage: gemara-owner demo | evaluate-fixture | project-review (use -h for flags)")
 	}
 	switch os.Args[1] {
+	case "project-review":
+		fs := flag.NewFlagSet("project-review", flag.ContinueOnError)
+		result := fs.String("result", "", "official Review result file")
+		ledger := fs.String("ledger", "", "official post-script v2 findings ledger")
+		head := fs.String("head", "", "independently established reviewed head")
+		if err := fs.Parse(os.Args[2:]); err != nil {
+			return err
+		}
+		if fs.NArg() != 0 {
+			return fmt.Errorf("unexpected_arguments")
+		}
+		rawResult, err := read(*result)
+		if err != nil {
+			return err
+		}
+		rawLedger, err := read(*ledger)
+		if err != nil {
+			return err
+		}
+		r, err := integration.ProjectReview(rawResult, rawLedger, *head)
+		if err != nil {
+			return err
+		}
+		return json.NewEncoder(os.Stdout).Encode(struct {
+			Version           string             `json:"schema_version"`
+			Head              string             `json:"head_sha"`
+			Review            integration.Review `json:"review"`
+			Authorization     string             `json:"authorization"`
+			MutationPermitted bool               `json:"mutation_permitted"`
+		}{"review-projection/v1", *head, r, "none", false})
 	case "demo":
 		fs := flag.NewFlagSet("demo", flag.ContinueOnError)
 		root := fs.String("root", ".", "integration checkout")
