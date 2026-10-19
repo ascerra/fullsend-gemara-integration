@@ -15,7 +15,7 @@ and GitLab deployments are unchanged.
 
 ## Try it
 
-With Go 1.25 or newer, from this checkout:
+With a supported, patched Go release (CI uses Go 1.26.9), from this checkout:
 
 ```sh
 go run ./cmd/gemara-owner demo
