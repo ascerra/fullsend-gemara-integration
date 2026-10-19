@@ -19,7 +19,7 @@
 
 ## Then: authenticated GitHub integration
 
-1. Confirm the private dependency's consumption/authentication model.
+1. Consume the public Apache-2.0 integration at an owner-approved immutable commit.
 2. Add the smallest supported post-script publication extension, preserving
    official Review behavior and complete finding dispositions.
 3. Implement authenticated, subject-bound GitHub evidence collection. Extend the
@@ -38,8 +38,6 @@ repository policy, credentials and approvals under that project's owner control.
 
 ## Decisions still needed
 
-- Public distribution or scoped read-only access for the private shared repo.
-- License for this integration before public release or external redistribution.
 - Normal governance-change route for auto-merge before deploying its consumer migration.
 
 No new upstream Fullsend/agents work or GitLab changes are authorized by creating

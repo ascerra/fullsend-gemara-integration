@@ -18,6 +18,7 @@ Official schemas are verified against Gemara commit
 Their licenses remain with their respective projects. Downloaded schema LICENSE
 files are retained in the ignored tool cache, not silently stripped.
 
-No license for the new integration has been selected yet. The repository is
-private. Select a license and review attribution before public release or
-external redistribution; do not infer a license from a dependency's license.
+Unless otherwise noted, this integration's source code and documentation are
+licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for the
+complete terms. Third-party dependencies and downloaded tools retain their own
+licenses; this grant does not relicense them.

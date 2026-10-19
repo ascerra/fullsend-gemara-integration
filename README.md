@@ -4,6 +4,9 @@
 our checks evaluate owner requirements using the Gemara SDK and produce native
 EvaluationLogs. Each consuming owner supplies repository-specific configuration.
 
+Licensed under [Apache-2.0](LICENSE). Consumers can fetch the public source at a
+reviewed immutable commit without a distribution credential.
+
 **Current status: working synthetic demonstration, not a deployed merger.**
 There is no live forge authentication, Fullsend installation, policy publisher,
 or merge writer in this repository yet. `eligible` means that a fixture satisfies

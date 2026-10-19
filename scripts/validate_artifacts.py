@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
 """Validate shared documents and measured logs against pinned official schemas.
 
 This optional check downloads only public, digest-pinned schema/tool archives.

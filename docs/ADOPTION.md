@@ -61,11 +61,12 @@ Review. Add only the supported publication seam required for bounded evidence.
 Verify automatic reviews, new pushes and `/fs-review`. Document any remaining
 patch or compatibility setting independently of Gemara.
 
-Consume a reviewed commit of this integration. The repo is currently private;
-a public consumer's job token cannot be assumed to read it. Before hosted use,
-choose either deliberate public publication after review or a narrowly scoped
-read-only distribution credential delivered to a trusted job. Do not reuse the
-merge App's credentials for dependency downloads or expose credentials to PR code.
+Consume a reviewed immutable commit of this public Apache-2.0 integration.
+Downloading the shared source requires no distribution credential. Pin the
+version in owner-controlled configuration and build without forge credentials;
+do not fetch a candidate PR's chosen version. Live collection and writing still
+require their separately scoped permissions. Do not reuse merge credentials for
+dependency downloads or expose credentials to PR code.
 
 An authenticated collector, required policy gate and scoped writer are still
 needed. Do not point the existing live merger at fixture outputs.
