@@ -32,6 +32,16 @@ governance is needed, without changing its shared control meanings.
 
 ## Evidence and authority
 
+`gemara-owner project-review --result FILE --ledger FILE --head SHA` converts the
+official Review result and post-script v2 findings ledger into the same review
+fields for either forge. Run it only after the official post-script successfully
+publishes. It preserves open findings, resolved dispositions and unknown risk;
+an absent ledger is an error. The head must come from independent host context.
+The result has no merge authority and does not authenticate its input files.
+Consumer wiring must capture the actual post-script ledger, authenticate the
+job/artifact, and establish current head/target, checks and protections separately.
+Do not reconstruct a ledger by scraping narrative review text.
+
 `FixtureEnvelope` contains selected synthetic forge fields plus an observation.
 The GitHub and GitLab normalizers map distinct project and change identities into
 one `Subject`; conflicting duplicate identities are rejected. For GitLab the
