@@ -1,0 +1,15 @@
+version: '1'
+runtime: claude
+roles:
+- triage
+- coder
+- review
+- fix
+- retro
+allowed_remote_resources:
+- https://raw.githubusercontent.com/fullsend-ai/fullsend/
+- https://raw.githubusercontent.com/fullsend-ai/agents/
+create_issues:
+  allow_targets:
+    repos:
+    - ascerra/fullsend-gemara-integration
