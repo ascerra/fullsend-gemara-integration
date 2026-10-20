@@ -69,9 +69,29 @@ func TestDemoRunsAllPairedCases(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var rows []json.RawMessage
-	if json.Unmarshal([]byte(out), &rows) != nil || len(rows) != 18 {
+	var rows []struct {
+		Forge  string `json:"forge"`
+		Case   string `json:"case"`
+		Report struct {
+			Decision          string `json:"decision"`
+			Authorization     string `json:"authorization"`
+			MutationPermitted bool   `json:"mutation_permitted"`
+		} `json:"report"`
+	}
+	if json.Unmarshal([]byte(out), &rows) != nil || len(rows) != 20 {
 		t.Fatal("incomplete demo")
+	}
+	stale := map[string]bool{}
+	for _, row := range rows {
+		if row.Case == "stale-evidence" {
+			if row.Report.Decision != "hold" || row.Report.Authorization != "none" || row.Report.MutationPermitted {
+				t.Fatalf("stale evidence did not hold without authority on %s", row.Forge)
+			}
+			stale[row.Forge] = true
+		}
+	}
+	if !stale["github"] || !stale["gitlab"] {
+		t.Fatal("stale-evidence case missing for a forge")
 	}
 }
 

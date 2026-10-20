@@ -4,7 +4,7 @@
     "id": "owner-merge-common",
     "type": "Policy",
     "gemara-version": "1.5.0",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Shared assessment definitions; consuming owners supply repository bindings.",
     "author": {
       "id": "fullsend-gemara-integration",
@@ -16,7 +16,7 @@
       {
         "id": "owner-merge-controls",
         "title": "Owner-controlled merge requirements",
-        "version": "0.1.0"
+        "version": "0.2.0"
       }
     ]
   },
@@ -102,7 +102,7 @@
             "required": true
           }
         ],
-        "evidence-requirements": "Revision-bound normalized observations with explicit provenance; fixtures are not live attestations."
+        "evidence-requirements": "Revision-bound normalized observations with explicit provenance, bound to the configured subject, policy and trusted publication context. The collection timestamp must be parseable, must not be later than the fixed evaluation time, and must not be older than the consuming owner's configured maximum evidence age at that time; fixtures are not live attestations."
       },
       {
         "id": "protections-active-plan",

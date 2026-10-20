@@ -10,7 +10,7 @@ import (
 
 // DemoCaseNames are scenarios, not a second set of policy rules. Only the two
 // forge baselines are stored as JSON; variations below keep the demo inspectable.
-var DemoCaseNames = []string{"clean", "one-line-governance", "larger-allowed", "open-finding", "stale-head", "failed-check", "missing-check", "wrong-project", "expired-grant"}
+var DemoCaseNames = []string{"clean", "one-line-governance", "larger-allowed", "open-finding", "stale-head", "failed-check", "missing-check", "wrong-project", "expired-grant", "stale-evidence"}
 
 func FixtureCase(binding Binding, evidence Evidence, name string) (Binding, Evidence, error) {
 	var b Binding
@@ -50,6 +50,9 @@ func FixtureCase(binding Binding, evidence Evidence, name string) (Binding, Evid
 		b.GrantExpiresAt = "2026-10-18T18:00:00Z"
 		e.Subject.BindingDigest = Digest(b)
 		e.Publication.Subject = e.Subject
+	case "stale-evidence":
+		// One hour before the fixed demo time, beyond either binding's limit.
+		e.CollectedAt = "2026-10-19T17:00:00Z"
 	default:
 		return Binding{}, Evidence{}, fmt.Errorf("unknown_demo_case")
 	}

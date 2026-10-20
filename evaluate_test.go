@@ -52,7 +52,7 @@ func evaluateForTest(t *testing.T, b Binding, e Evidence) Report {
 }
 
 func TestPairedForgeParityAndNativeLogs(t *testing.T) {
-	cases := map[string]string{"clean": "eligible", "larger-allowed": "eligible", "one-line-governance": "hold", "open-finding": "hold", "stale-head": "hold", "failed-check": "hold", "missing-check": "hold", "wrong-project": "hold", "expired-grant": "hold"}
+	cases := map[string]string{"clean": "eligible", "larger-allowed": "eligible", "one-line-governance": "hold", "open-finding": "hold", "stale-head": "hold", "failed-check": "hold", "missing-check": "hold", "wrong-project": "hold", "expired-grant": "hold", "stale-evidence": "hold"}
 	for name, want := range cases {
 		t.Run(name, func(t *testing.T) {
 			var reference Report
@@ -84,6 +84,59 @@ func TestPairedForgeParityAndNativeLogs(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// The freshness check runs before any control-specific check, so stale evidence
+// leaves every assessment Unknown (never Failed) and records the reason natively.
+func TestStaleEvidenceDemonstration(t *testing.T) {
+	for _, forge := range []string{"github", "gitlab"} {
+		t.Run(forge, func(t *testing.T) {
+			b, e := baseline(t, forge, "clean")
+			if r := evaluateForTest(t, b, e); r.Decision != "eligible" {
+				t.Fatalf("clean baseline not eligible: %s", r.Decision)
+			}
+			b, e = baseline(t, forge, "stale-evidence")
+			collected, err := time.Parse(time.RFC3339, e.CollectedAt)
+			if err != nil || at().Sub(collected) <= time.Duration(b.MaximumAgeSeconds)*time.Second {
+				t.Fatal("stale-evidence case is not older than the owner limit")
+			}
+			r := evaluateForTest(t, b, e)
+			if r.Decision != "hold" || r.Authorization != "none" || r.MutationPermitted {
+				t.Fatalf("stale evidence gained authority: %+v", r)
+			}
+			if r.Log.Result != gemara.Unknown {
+				t.Fatalf("native aggregate should be Unknown, got %s", r.Log.Result)
+			}
+			if len(r.Assessments) != 5 || len(r.Log.Evaluations) != 5 {
+				t.Fatal("missing assessments")
+			}
+			for i, a := range r.Assessments {
+				if a.State != "unknown" || a.Reason != "stale_or_future_evidence" {
+					t.Fatalf("%s: want unknown/stale_or_future_evidence, got %s/%s", a.ID, a.State, a.Reason)
+				}
+				c := r.Log.Evaluations[i]
+				if c.Result != gemara.Unknown || len(c.AssessmentLogs) != 1 || len(c.AssessmentLogs[0].Evidence) != 1 {
+					t.Fatalf("%s: native evaluation not Unknown or evidence missing", a.ID)
+				}
+				p, ok := c.AssessmentLogs[0].Evidence[0].Payload.(map[string]any)
+				if !ok || p["reason"] != "stale_or_future_evidence" {
+					t.Fatalf("%s: native evidence payload lacks stale reason", a.ID)
+				}
+			}
+		})
+	}
+}
+
+func TestEvidenceAtFreshnessLimitRemainsEligible(t *testing.T) {
+	b, e := baseline(t, "github", "clean")
+	e.CollectedAt = at().Add(-time.Duration(b.MaximumAgeSeconds) * time.Second).Format(time.RFC3339)
+	if r := evaluateForTest(t, b, e); r.Decision != "eligible" {
+		t.Fatalf("evidence exactly at the owner limit held: %+v", r.Assessments)
+	}
+	e.CollectedAt = at().Add(-time.Duration(b.MaximumAgeSeconds+1) * time.Second).Format(time.RFC3339)
+	if r := evaluateForTest(t, b, e); r.Decision != "hold" {
+		t.Fatal("evidence one second beyond the owner limit became eligible")
 	}
 }
 
