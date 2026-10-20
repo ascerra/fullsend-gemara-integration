@@ -171,28 +171,7 @@ func check(id string, b Binding, e Evidence, expected Subject, now time.Time) (g
 			}
 		}
 	case "REVIEW-CLEAR":
-		if !e.Review.Completed || e.Review.Risk == nil || *e.Review.Risk < 1 || *e.Review.Risk > 5 || e.Review.Findings == nil {
-			return gemara.Unknown, "review_incomplete"
-		}
-		if e.Review.Action != "approve" || *e.Review.Risk > b.MaximumRisk {
-			return gemara.Failed, "review_not_approved_low_risk"
-		}
-		seen := map[string]bool{}
-		for _, f := range e.Review.Findings {
-			if f.ID == "" || seen[f.ID] {
-				return gemara.Unknown, "finding_invalid"
-			}
-			seen[f.ID] = true
-			// Human dismissals need authenticated disposition proof, which this
-			// initial fixture contract deliberately does not pretend to provide.
-			switch f.Status {
-			case "open", "reclassified":
-				return gemara.Failed, "unresolved_finding"
-			case "resolved_by_change":
-			default:
-				return gemara.Unknown, "unverified_finding_disposition"
-			}
-		}
+		return checkReview(e.Review, b.MaximumRisk)
 	case "CHECKS-PASS":
 		for _, name := range b.RequiredChecks {
 			found := 0

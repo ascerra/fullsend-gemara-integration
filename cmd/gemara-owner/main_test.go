@@ -105,3 +105,15 @@ func TestCLIReviewProjectionHasNoAuthority(t *testing.T) {
 		t.Fatal("stale head accepted")
 	}
 }
+
+func TestCLIReviewCheckHoldsMissingRisk(t *testing.T) {
+	head := strings.Repeat("a", 40)
+	path := filepath.Join(t.TempDir(), "projection.json")
+	if err := os.WriteFile(path, []byte(`{"schema_version":"review-projection/v1","head_sha":"`+head+`","review":{"completed":true,"action":"approve","risk_score":null,"findings":[]},"authorization":"none","mutation_permitted":false}`), 0600); err != nil {
+		t.Fatal(err)
+	}
+	out, err := invoke(t, "check-review", "--projection", path, "--head", head, "--maximum-risk", "2")
+	if err == nil || err.Error() != "policy_held" || !strings.Contains(out, `"risk_assessment_missing"`) || !strings.Contains(out, `"native_evaluation"`) || !strings.Contains(out, `"mutation_permitted":false`) {
+		t.Fatalf("missing risk failed to hold: %s %v", out, err)
+	}
+}
