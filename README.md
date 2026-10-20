@@ -17,11 +17,10 @@ and GitLab deployments are unchanged.
 ## Fullsend agents
 
 The per-repository Fullsend shim calls the official v0.48.1 workflows at immutable
-commit `0cb88dc74260785f0b977f7277f91c0039eaaf21`. The standard triage, coder,
-review, fix, retro, and prioritize roles are enabled. Fix uses the coder app.
-The standard prioritization companion workflow is included.
+commit `0cb88dc74260785f0b977f7277f91c0039eaaf21`. The triage, coder, review,
+fix, and retro roles are enabled. Fix uses the coder app. Prioritize is disabled.
 
-Agent execution requires the Fullsend triage, coder, review, retro, and prioritize
+Agent execution requires the Fullsend triage, coder, review, and retro
 GitHub Apps to have access to this repository, along with configured Actions
 inference secrets and variables.
 Inference uses repository-scoped Google workload identity federation; no
