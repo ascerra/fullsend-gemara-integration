@@ -26,6 +26,8 @@ inference secrets and variables.
 Inference uses repository-scoped Google workload identity federation; no
 service-account key belongs in the repository or its Actions secrets.
 
+To request an on-demand Fullsend review, comment `/fs-review` on an open pull request.
+
 Workflow installation does not establish a live Gemara gate, publish EvaluationLogs,
 or authorize merging. Those remain separate implementation and acceptance steps.
 
