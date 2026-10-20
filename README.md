@@ -8,21 +8,22 @@ Licensed under [Apache-2.0](LICENSE). Consumers can fetch the public source at a
 reviewed immutable commit without a distribution credential.
 
 **Current status: working synthetic demonstration, not a deployed merger.**
-The repository includes the standard Fullsend Review installation scaffold.
+The repository includes the standard Fullsend installation scaffold.
 The Gemara evaluator still has no live forge authentication, policy publisher,
 or merge writer. `eligible` means that a fixture satisfies
 the candidate requirements; it grants no permission to merge. Existing auto-merge
 and GitLab deployments are unchanged.
 
-## Fullsend Review
+## Fullsend agents
 
 The per-repository Fullsend shim calls the official v0.48.1 workflows at immutable
-commit `0cb88dc74260785f0b977f7277f91c0039eaaf21`. Only the Review role is enabled.
-The standard prioritization companion workflow is included, but prioritization
-is not enabled in the repository configuration.
+commit `0cb88dc74260785f0b977f7277f91c0039eaaf21`. The standard triage, coder,
+review, fix, retro, and prioritize roles are enabled. Fix uses the coder app.
+The standard prioritization companion workflow is included.
 
-Review requires the Fullsend Review GitHub App to have access to this repository
-and the repository's Actions inference secrets and variables to be configured.
+Agent execution requires the Fullsend triage, coder, review, retro, and prioritize
+GitHub Apps to have access to this repository, along with configured Actions
+inference secrets and variables.
 Inference uses repository-scoped Google workload identity federation; no
 service-account key belongs in the repository or its Actions secrets.
 

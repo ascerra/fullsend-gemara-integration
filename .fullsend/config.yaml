@@ -1,7 +1,12 @@
 version: '1'
 runtime: claude
 roles:
+- triage
+- coder
 - review
+- fix
+- retro
+- prioritize
 allowed_remote_resources:
 - https://raw.githubusercontent.com/fullsend-ai/fullsend/
 - https://raw.githubusercontent.com/fullsend-ai/agents/
