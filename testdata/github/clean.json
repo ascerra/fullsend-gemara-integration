@@ -34,7 +34,7 @@
       "change": 50,
       "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "target_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-      "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+      "policy_sha256": "f2fcd0d6a415bf3adae7704f5fd30bc017b390a2a9fe0ad6db2933a90c420989",
       "binding_sha256": "5d674f23de94d644ac2ffc858c15fcf83bdc3cf107723b2b316c5da05c6a7069"
     },
     "collected_at": "2026-10-19T17:59:00Z",
@@ -75,7 +75,7 @@
         "change": 50,
         "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "target_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+        "policy_sha256": "f2fcd0d6a415bf3adae7704f5fd30bc017b390a2a9fe0ad6db2933a90c420989",
         "binding_sha256": "5d674f23de94d644ac2ffc858c15fcf83bdc3cf107723b2b316c5da05c6a7069"
       },
       "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"

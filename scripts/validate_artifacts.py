@@ -93,7 +93,7 @@ def main():
     if len(raw) > 2 * 1024 * 1024:
         raise ValueError("results_oversized")
     results = json.loads(raw)
-    if len(results) != 18:
+    if len(results) != 20:
         raise ValueError("incomplete_demo_results")
     inputs = [(ROOT / "policy/catalog.json", "ControlCatalog"), (ROOT / "policy/common.json", "Policy")]
     with tempfile.TemporaryDirectory(prefix="gemara-schema-") as directory:
@@ -110,7 +110,7 @@ def main():
                                     capture_output=True, timeout=20)
             if result.returncode:
                 raise ValueError("official_schema_rejected_" + kind)
-    print("Pinned official schemas accepted the catalog, policy and all 18 native EvaluationLogs.")
+    print("Pinned official schemas accepted the catalog, policy and all 20 native EvaluationLogs.")
 
 
 if __name__ == "__main__":

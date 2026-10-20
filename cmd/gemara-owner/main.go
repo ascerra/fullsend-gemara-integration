@@ -161,7 +161,7 @@ func run() error {
 		if *jsonMode {
 			return json.NewEncoder(os.Stdout).Encode(all)
 		}
-		fmt.Println("18 measured synthetic cases; native Gemara SDK; identical shared policy; no live authentication or merge authority.")
+		fmt.Println("20 measured synthetic cases; native Gemara SDK; identical shared policy; no live authentication or merge authority.")
 		return nil
 	case "evaluate-fixture":
 		fs := flag.NewFlagSet("evaluate-fixture", flag.ContinueOnError)
