@@ -42,6 +42,20 @@ Consumer wiring must capture the actual post-script ledger, authenticate the
 job/artifact, and establish current head/target, checks and protections separately.
 Do not reconstruct a ledger by scraping narrative review text.
 
+`gemara-owner check-review --projection FILE --head SHA --maximum-risk 2` applies
+the same native Gemara `REVIEW-CLEAR` assessment to a collector-produced projection.
+It exits 2 on hold and retains a native assessment with `risk_assessment_missing`
+when the score is absent. This evaluates one control, not the entire merge policy.
+The caller must authenticate the producer and establish the expected head first.
+The report has no merge authority and does not claim to authenticate the input.
+
+Run the shared executable in a separate CI job with no write credentials or
+inference secrets. Clearing child environment variables inside a privileged
+post-script is not process isolation: the same UID can still access its parent.
+Keep authenticated collection in trusted owner-controlled code and pass only
+bounded data to the assessment job. Do not execute downloaded shared code inside
+the privileged official Review post-script.
+
 `FixtureEnvelope` contains selected synthetic forge fields plus an observation.
 The GitHub and GitLab normalizers map distinct project and change identities into
 one `Subject`; conflicting duplicate identities are rejected. For GitLab the

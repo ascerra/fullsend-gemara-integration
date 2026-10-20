@@ -56,7 +56,7 @@ func evaluate(binding, fixture, scenario string, now time.Time) (integration.Rep
 
 func run() error {
 	if len(os.Args) < 2 {
-		return fmt.Errorf("usage: gemara-owner demo | evaluate-fixture | project-review (use -h for flags)")
+		return fmt.Errorf("usage: gemara-owner demo | evaluate-fixture | project-review | check-review (use -h for flags)")
 	}
 	switch os.Args[1] {
 	case "project-review":
@@ -82,13 +82,38 @@ func run() error {
 		if err != nil {
 			return err
 		}
-		return json.NewEncoder(os.Stdout).Encode(struct {
-			Version           string             `json:"schema_version"`
-			Head              string             `json:"head_sha"`
-			Review            integration.Review `json:"review"`
-			Authorization     string             `json:"authorization"`
-			MutationPermitted bool               `json:"mutation_permitted"`
-		}{"review-projection/v1", *head, r, "none", false})
+		return json.NewEncoder(os.Stdout).Encode(integration.ReviewProjection{Version: "review-projection/v1", Head: *head, Review: r, Authorization: "none"})
+	case "check-review":
+		fs := flag.NewFlagSet("check-review", flag.ContinueOnError)
+		projection := fs.String("projection", "", "collector-produced Review projection")
+		head := fs.String("head", "", "independently established reviewed head")
+		maximumRisk := fs.Int("maximum-risk", 0, "owner maximum risk, 1 through 5")
+		if err := fs.Parse(os.Args[2:]); err != nil {
+			return err
+		}
+		if fs.NArg() != 0 {
+			return fmt.Errorf("unexpected_arguments")
+		}
+		raw, err := read(*projection)
+		if err != nil {
+			return err
+		}
+		var p integration.ReviewProjection
+		if err = integration.Decode(raw, &p); err != nil {
+			return err
+		}
+		r, err := integration.CheckReview(p, *head, *maximumRisk)
+		if err != nil {
+			return err
+		}
+		if err = json.NewEncoder(os.Stdout).Encode(r); err != nil {
+			return err
+		}
+		if r.Decision != "eligible" {
+			return fmt.Errorf("policy_held")
+		}
+		return nil
+
 	case "demo":
 		fs := flag.NewFlagSet("demo", flag.ContinueOnError)
 		root := fs.String("root", ".", "integration checkout")
