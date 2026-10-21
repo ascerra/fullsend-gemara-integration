@@ -132,3 +132,20 @@ func TestCLIQualityExactThresholdAndHold(t *testing.T) {
 		t.Fatal("implicit clock accepted")
 	}
 }
+
+func TestCLICandidateQualityCompositionAndMissingTime(t *testing.T) {
+	for _, tc := range []struct {
+		file, decision string
+		held           bool
+	}{{"at-threshold", "eligible", false}, {"below-threshold", "hold", true}} {
+		out, err := invoke(t, "assess-candidate", "--binding", "../../examples/github/binding.json", "--observation", "../../examples/quality/synthetic-candidate-observation.json", "--judge-policy", "../../examples/quality/policy.json", "--judge-observation", "../../examples/quality/"+tc.file+".json", "--at", "2026-10-20T00:00:00Z")
+		var result map[string]any
+		parsed := json.Unmarshal([]byte(out), &result)
+		if parsed != nil || (err != nil) != tc.held || result["decision"] != tc.decision || result["schema_version"] != "candidate-assessment/v1" {
+			t.Fatalf("unexpected candidate CLI: %s %v", out, err)
+		}
+	}
+	if _, err := invoke(t, "assess-candidate", "--binding", "../../examples/github/binding.json", "--observation", "../../examples/quality/synthetic-candidate-observation.json", "--judge-policy", "../../examples/quality/policy.json", "--judge-observation", "../../examples/quality/at-threshold.json"); err == nil {
+		t.Fatal("missing explicit clock accepted")
+	}
+}

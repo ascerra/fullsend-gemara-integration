@@ -56,7 +56,7 @@ func evaluate(binding, fixture, scenario string, now time.Time) (integration.Rep
 
 func run() error {
 	if len(os.Args) < 2 {
-		return fmt.Errorf("usage: gemara-owner demo | evaluate-fixture | project-review | check-review | check-judge (use -h for flags)")
+		return fmt.Errorf("usage: gemara-owner demo | evaluate-fixture | project-review | check-review | assess-candidate | check-judge (use -h for flags)")
 	}
 	switch os.Args[1] {
 	case "project-review":
@@ -119,7 +119,7 @@ func run() error {
 		binding := fs.String("binding", "", "trusted owner binding")
 		evidence := fs.String("observation", "", "trusted collector observation")
 		policy := fs.String("judge-policy", "", "trusted required quality policy")
-		quality := fs.String("judge-observation", "", "authenticated quality aggregate")
+		quality := fs.String("judge-observation", "", "caller-authenticated quality aggregate")
 		at := fs.String("at", "", "explicit assessment time")
 		if err := fs.Parse(os.Args[2:]); err != nil {
 			return err
@@ -162,7 +162,7 @@ func run() error {
 	case "check-judge":
 		fs := flag.NewFlagSet("check-judge", flag.ContinueOnError)
 		policy := fs.String("policy", "", "trusted consumer quality policy")
-		observation := fs.String("observation", "", "authenticated aggregate observation")
+		observation := fs.String("observation", "", "caller-authenticated aggregate observation")
 		at := fs.String("at", "", "explicit assessment time")
 		if err := fs.Parse(os.Args[2:]); err != nil {
 			return err

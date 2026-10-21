@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+
 package integration
 
 import (
@@ -63,6 +64,7 @@ func TestJudgeFailClosedAndExactThreshold(t *testing.T) {
 		})
 	}
 }
+
 func TestJudgeRejectsInvalidPolicy(t *testing.T) {
 	p, o, now := judgeExample()
 	p.MinimumBasisPoints = 0

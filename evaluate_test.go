@@ -225,3 +225,19 @@ func TestInvalidBindingsFail(t *testing.T) {
 		})
 	}
 }
+
+func TestFixtureOutputContractRetainsOriginalNames(t *testing.T) {
+	b, e := baseline(t, "github", "clean")
+	r := evaluateForTest(t, b, e)
+	for _, a := range r.Assessments {
+		if a.Reason != "satisfied_in_synthetic_fixture" {
+			t.Fatal("fixture reason changed")
+		}
+	}
+	raw, _ := json.Marshal(r.Log)
+	for _, value := range []string{"synthetic-observation", "fixture-evidence", "Synthetic fixture assessed using the native Gemara SDK", "candidate fixture"} {
+		if !strings.Contains(string(raw), value) {
+			t.Fatalf("fixture log lost %s", value)
+		}
+	}
+}

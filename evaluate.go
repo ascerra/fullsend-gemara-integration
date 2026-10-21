@@ -89,6 +89,16 @@ func evaluateObservation(b Binding, e Evidence, now time.Time) (Report, error) {
 	}
 	catalogDigest, policyDigest := SharedDigests()
 	r = Report{Version: "owner-evaluation/v1", Engine: "gemara", SDK: gemara.SchemaVersion, EvidenceKind: e.SourceKind, Decision: "eligible", Authorization: "none", PolicyDigest: policyDigest, CatalogDigest: catalogDigest, BindingDigest: Digest(b), Subject: e.Subject}
+	evidenceType, evidenceRef, evidenceTitle := e.SourceKind, "observation-evidence", "Normalized evidence; source kind recorded in report"
+	description := "Normalized candidate evaluation; no authentication or merge authority"
+	evaluationMessage := "Normalized observation assessed using the native Gemara SDK; authentication is external"
+	targetName := b.Identity.Repository + " candidate observation"
+	if e.SourceKind == "synthetic-fixture" {
+		evidenceType, evidenceRef, evidenceTitle = "synthetic-observation", "fixture-evidence", "Synthetic normalized evidence"
+		description = "Synthetic candidate evaluation; no live authentication or merge authority"
+		evaluationMessage = "Synthetic fixture assessed using the native Gemara SDK"
+		targetName = b.Identity.Repository + " candidate fixture"
+	}
 	expected := e.Subject
 	expected.Identity = b.Identity
 	expected.PolicyDigest = policyDigest
@@ -111,9 +121,12 @@ func evaluateObservation(b Binding, e Evidence, now time.Time) (Report, error) {
 			return Report{}, fmt.Errorf("unbound_plan")
 		}
 		state, reason := check(control.Id, b, e, expected, now)
+		if state == gemara.Passed && e.SourceKind == "synthetic-fixture" {
+			reason = "satisfied_in_synthetic_fixture"
+		}
 		c := &gemara.ControlEvaluation{Name: control.Title, Control: gemara.EntryMapping{ReferenceId: cat.Metadata.Id, EntryId: control.Id}}
 		p := &payload{}
-		ev := map[string]any{"id": control.Id, "type": e.SourceKind, "collected-at": e.CollectedAt, "payload": map[string]any{"evidence-kind": e.SourceKind, "subject-sha256": Digest(e.Subject), "observation-sha256": Digest(e), "reason": reason}, "source": map[string]any{"reference-id": "observation-evidence", "coordinate": control.Id, "digest": "sha256:" + Digest(e)}}
+		ev := map[string]any{"id": control.Id, "type": evidenceType, "collected-at": e.CollectedAt, "payload": map[string]any{"evidence-kind": e.SourceKind, "subject-sha256": Digest(e.Subject), "observation-sha256": Digest(e), "reason": reason}, "source": map[string]any{"reference-id": evidenceRef, "coordinate": control.Id, "digest": "sha256:" + Digest(e)}}
 		var nativeEvidence gemara.Evidence
 		raw, _ := json.Marshal(ev)
 		if err := json.Unmarshal(raw, &nativeEvidence); err != nil {
@@ -125,7 +138,7 @@ func evaluateObservation(b Binding, e Evidence, now time.Time) (Report, error) {
 		a.Plan = &gemara.EntryMapping{ReferenceId: pol.Metadata.Id, EntryId: plan.Id}
 		a.Run(p)
 		c.Result = a.Result
-		c.Message = "Normalized observation assessed using the native Gemara SDK; authentication is external"
+		c.Message = evaluationMessage
 		r.Log.Evaluations = append(r.Log.Evaluations, c)
 		r.Log.Result = gemara.UpdateAggregateResult(r.Log.Result, a.Result)
 		label := "unknown"
@@ -140,12 +153,12 @@ func evaluateObservation(b Binding, e Evidence, now time.Time) (Report, error) {
 			r.Decision = "hold"
 		}
 	}
-	meta := map[string]any{"id": "evaluation-" + Digest(map[string]any{"binding": b, "evidence": e, "at": now.UTC().Format(time.RFC3339Nano)}), "type": "EvaluationLog", "gemara-version": "1.5.0", "description": "Normalized candidate evaluation; no authentication or merge authority", "author": map[string]any{"id": "fullsend-gemara-integration", "name": "Fullsend Gemara integration", "type": "Software"}, "mapping-references": []map[string]any{{"id": cat.Metadata.Id, "title": cat.Title, "version": cat.Metadata.Version}, {"id": pol.Metadata.Id, "title": pol.Title, "version": pol.Metadata.Version}, {"id": "observation-evidence", "title": "Normalized evidence; source kind recorded in report", "version": "1"}}}
+	meta := map[string]any{"id": "evaluation-" + Digest(map[string]any{"binding": b, "evidence": e, "at": now.UTC().Format(time.RFC3339Nano)}), "type": "EvaluationLog", "gemara-version": "1.5.0", "description": description, "author": map[string]any{"id": "fullsend-gemara-integration", "name": "Fullsend Gemara integration", "type": "Software"}, "mapping-references": []map[string]any{{"id": cat.Metadata.Id, "title": cat.Title, "version": cat.Metadata.Version}, {"id": pol.Metadata.Id, "title": pol.Title, "version": pol.Metadata.Version}, {"id": evidenceRef, "title": evidenceTitle, "version": "1"}}}
 	raw, _ := json.Marshal(meta)
 	if err := json.Unmarshal(raw, &r.Log.Metadata); err != nil {
 		return Report{}, err
 	}
-	target := map[string]any{"id": "sha256:" + Digest(e.Subject), "name": b.Identity.Repository + " candidate observation", "type": "Software"}
+	target := map[string]any{"id": "sha256:" + Digest(e.Subject), "name": targetName, "type": "Software"}
 	raw, _ = json.Marshal(target)
 	if err := json.Unmarshal(raw, &r.Log.Target); err != nil {
 		return Report{}, err

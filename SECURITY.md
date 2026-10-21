@@ -1,9 +1,11 @@
 # Security boundary
 
-This project currently evaluates explicitly synthetic fixtures. It does not
-authenticate live forge evidence, receive production credentials or request merges.
-An eligible fixture result grants no merge authority. Future live adapters and
-writers require their own authentication and enforcement review.
+This project evaluates synthetic fixtures and caller-authenticated collector
+observations. The optional MLflow collector reads reader credentials from its
+environment and performs only bounded metadata searches; it exports aggregates
+without trace prose or credentials. It does not authenticate forge evidence,
+run a judge, or request merges. Assessment results grant no merge authority.
+Consumer adapters and protected enforcement require their own security review.
 
 CI uses a patched Go 1.26 release, verifies module hashes, scans the complete Git
 history using checksum-pinned Gitleaks, checks reachable vulnerabilities with the

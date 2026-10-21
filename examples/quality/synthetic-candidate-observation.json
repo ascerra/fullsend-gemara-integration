@@ -1,0 +1,67 @@
+{
+  "source_kind": "collector-observation",
+  "subject": {
+    "identity": {
+      "forge": "github",
+      "host": "github.com",
+      "project_id": "1383516376",
+      "repository": "fullsend-ai/auto-merge",
+      "target_branch": "main"
+    },
+    "change": 50,
+    "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "target_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+    "binding_sha256": "5d674f23de94d644ac2ffc858c15fcf83bdc3cf107723b2b316c5da05c6a7069"
+  },
+  "collected_at": "2026-10-20T00:00:00Z",
+  "open": true,
+  "draft": false,
+  "files": [
+    {
+      "path": "docs/example-feature.md",
+      "kind": "modified",
+      "mode": "100644"
+    }
+  ],
+  "review": {
+    "completed": true,
+    "action": "approve",
+    "risk_score": 1,
+    "findings": []
+  },
+  "checks": [
+    {
+      "name": "Example contract",
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "status": "success"
+    }
+  ],
+  "publication": {
+    "workflow": ".github/workflows/fullsend.yaml",
+    "run_id": "1001",
+    "attempt": 1,
+    "subject": {
+      "identity": {
+        "forge": "github",
+        "host": "github.com",
+        "project_id": "1383516376",
+        "repository": "fullsend-ai/auto-merge",
+        "target_branch": "main"
+      },
+      "change": 50,
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "target_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "policy_sha256": "0f81db78fd9a7c381524d2ebba6da8a96477cad9423d8e2b023bb2bbdcd9ec87",
+      "binding_sha256": "5d674f23de94d644ac2ffc858c15fcf83bdc3cf107723b2b316c5da05c6a7069"
+    },
+    "artifact_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "protections": {
+    "protected_target": true,
+    "required_policy_gate": true,
+    "discussions_resolved": true,
+    "bypass_enabled": false,
+    "merge_mechanism": "merge-queue"
+  }
+}

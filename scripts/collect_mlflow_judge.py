@@ -28,7 +28,9 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 def timestamp(text):
-    return datetime.fromisoformat(text.replace("Z", "+00:00")).astimezone(timezone.utc)
+    parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+    require(parsed.tzinfo is not None, "timestamp_timezone_missing")
+    return parsed.astimezone(timezone.utc)
 
 
 def collect(binding, now, fetch):
@@ -39,6 +41,7 @@ def collect(binding, now, fetch):
         type(binding["lookback_days"]) is int and 1 <= binding["lookback_days"] <= 365,
         "invalid_window",
     )
+    now = now.replace(microsecond=0)
     start = now - timedelta(days=binding["lookback_days"])
     body = {
         "locations": [
@@ -73,18 +76,26 @@ def collect(binding, now, fetch):
                 for a in trace.get("assessments", [])
                 if a.get("assessment_name") == binding["scorer"]
                 and a.get("source", {}).get("source_id") == binding["source_id"]
-                and a.get("source", {}).get("source_type") == "LLM_JUDGE"
-                and a.get("valid") is True
             ]
             if not matches:
                 excluded += 1
                 continue
-            if len(matches) != 1 or trace.get("state") != "OK":
+            if (
+                len(matches) != 1
+                or trace.get("state") != "OK"
+                or matches[0].get("valid") is not True
+                or matches[0].get("source", {}).get("source_type") != "LLM_JUDGE"
+            ):
                 invalid += 1
                 continue
             a = matches[0]
             value = a.get("feedback", {}).get("value")
-            if type(value) not in (float, int) or value not in (0, 1) or a.get("error"):
+            if (
+                type(value) not in (float, int)
+                or value not in (0, 1)
+                or a.get("error")
+                or a.get("feedback", {}).get("error")
+            ):
                 invalid += 1
                 continue
             updated = timestamp(a["last_update_time"])
@@ -124,6 +135,17 @@ def collect(binding, now, fetch):
         "authorization": "none",
         "mutation_permitted": False,
     }
+
+
+def collect_stable(binding, now, fetch):
+    """Two equal bounded scans detect common pagination races, not DB isolation."""
+    now = now.replace(microsecond=0)
+    first = collect(binding, now, fetch)
+    if not first["complete"]:
+        return first
+    second = collect(binding, now, fetch)
+    require(first == second, "judge_population_changed")
+    return second
 
 
 def main():
@@ -166,7 +188,7 @@ def main():
         require(len(raw) <= 4 * 1024 * 1024, "response_too_large")
         return json.loads(raw)
 
-    report = collect(binding, datetime.now(timezone.utc), fetch)
+    report = collect_stable(binding, datetime.now(timezone.utc), fetch)
     output = Path(args.output)
     # O_EXCL rejects existing files and symlinks; no public-permission window.
     fd = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

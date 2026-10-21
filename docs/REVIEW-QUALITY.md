@@ -48,10 +48,14 @@ python3 scripts/collect_mlflow_judge.py \
 
 Credentials are read only from `MLFLOW_READER_USERNAME` and
 `MLFLOW_READER_PASSWORD`. The collector uses HTTPS, rejects redirects, caps
-responses and pagination, verifies experiment/window, deduplicates traces and
+responses and pagination, verifies experiment/window, rejects duplicate traces and
 accepts one valid binary assessment per completed trace from the configured
 source. It calls metadata search only; it never fetches trace artifacts, runs
 a model, or writes feedback. Only counts, timestamps and a digest leave memory.
+The collection time is truncated to whole seconds before filtering. Two scans
+with the same fixed window must produce identical aggregates and record digests;
+a changed population or duplicate trace aborts collection. This detects common
+pagination races but is not database snapshot isolation under concurrent writes.
 Do not upload local live aggregates to public repositories without approval.
 
 The aggregate is explicitly **experiment-wide scored approvals**. It is not a
@@ -88,3 +92,15 @@ The `assess-candidate` command requires `--binding`, `--observation`,
 assessment sets and an AND-composed decision. Only collector observations are
 accepted; the fixture API remains separate. Passing this API's data checks is
 not a claim that authentication or live merge enforcement has been deployed.
+
+The demo deliberately uses a strict invalid-assessment rule: any bound-source
+invalidated, overridden, ambiguous, non-binary or errored assessment holds the
+population, including nested feedback errors. Such rows are not silently removed
+from the denominator or mislabeled as another source. This can hold all candidates
+for the full window. Recovery requires the data owner to correct the source
+assessment or explicitly approve a different versioned cohort policy; this
+collector never edits feedback, chooses a convenient rescore or relaxes policy.
+
+A [synthetic candidate observation](../examples/quality/synthetic-candidate-observation.json)
+exists only to exercise the CLI at a fixed test time. Despite its API shape, it
+is not authenticated live data and must never be consumed by a merge writer.

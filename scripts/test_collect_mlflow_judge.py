@@ -71,17 +71,52 @@ class JudgeCollectorTests(unittest.TestCase):
         result = self.collect([{"traces": [self.row]}])
         self.assertEqual((result["total"], result["invalid"]), (0, 1))
 
-    def test_wrong_sources_and_invalidated_assessments_are_excluded(self):
-        for field in ["source", "valid"]:
-            with self.subTest(field=field):
-                row = copy.deepcopy(self.row)
-                row["assessments"][0][field] = (
-                    {"source_type": "LLM_JUDGE", "source_id": "other"}
-                    if field == "source"
-                    else False
-                )
-                r = self.collect([{"traces": [row]}])
-                self.assertEqual((r["total"], r["excluded_other_sources"]), (0, 1))
+    def test_other_sources_excluded_but_bound_invalidated_scores_hold(self):
+        row = copy.deepcopy(self.row)
+        row["assessments"][0]["source"]["source_id"] = "other"
+        r = self.collect([{"traces": [row]}])
+        self.assertEqual(
+            (r["total"], r["excluded_other_sources"], r["invalid"]), (0, 1, 0)
+        )
+        for change in [
+            lambda a: a.update(valid=False),
+            lambda a: a.pop("valid"),
+            lambda a: a["source"].update(source_type="CODE"),
+            lambda a: a["feedback"].update(error={"code": "synthetic_error"}),
+        ]:
+            row = copy.deepcopy(self.row)
+            change(row["assessments"][0])
+            r = self.collect([{"traces": [row]}])
+            self.assertEqual(
+                (r["total"], r["excluded_other_sources"], r["invalid"]), (0, 0, 1)
+            )
+
+    def test_two_scans_must_match_and_time_bounds_are_aligned(self):
+        now = self.now.replace(microsecond=123456)
+        bodies = []
+
+        def fetch(body):
+            bodies.append(copy.deepcopy(body))
+            return {"traces": [copy.deepcopy(self.row)]}
+
+        result = collector.collect_stable(self.binding, now, fetch)
+        self.assertEqual(len(bodies), 2)
+        self.assertEqual(result["window_end"], "2026-10-20T00:00:00Z")
+        self.assertIn(
+            "trace.timestamp_ms < " + str(int(self.now.timestamp() * 1000)),
+            bodies[0]["filter"],
+        )
+        calls = 0
+
+        def changed(body):
+            nonlocal calls
+            calls += 1
+            row = copy.deepcopy(self.row)
+            row["assessments"][0]["feedback"]["value"] = calls - 1
+            return {"traces": [row]}
+
+        with self.assertRaisesRegex(ValueError, "judge_population_changed"):
+            collector.collect_stable(self.binding, now, changed)
 
     def test_duplicate_trace_pagination_cycle_wrong_experiment_and_window_reject(self):
         with self.assertRaisesRegex(ValueError, "duplicate_trace"):

@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"reflect"
 	"regexp"
 	"strings"
 	"time"
@@ -131,12 +132,73 @@ func Decode(raw []byte, target any) error {
 	if _, err := d.Token(); err != io.EOF {
 		return fmt.Errorf("trailing_json")
 	}
+	// Gate inputs require explicit keys: omitted/null false or zero values must
+	// not silently become permissive claims. SDK documents retain their schema.
+	switch target.(type) {
+	case *Evidence, *Binding, *JudgeObservation, *JudgePolicy, *ReviewProjection, *FixtureEnvelope:
+		var value any
+		if err := json.Unmarshal(raw, &value); err != nil || !requiredFields(value, reflect.TypeOf(target).Elem()) {
+			return fmt.Errorf("required_fields_missing_or_null")
+		}
+	}
+
 	d = json.NewDecoder(bytes.NewReader(raw))
 	d.DisallowUnknownFields()
 	if err := d.Decode(target); err != nil {
 		return fmt.Errorf("invalid_fields")
 	}
 	return nil
+}
+
+// requiredFields follows the JSON contract recursively; only omitempty permits
+// omission. Pointer nulls (unknown risk) and null slices remain fail-closed in
+// their semantic checks. Primitive nulls are never accepted as false or zero.
+func requiredFields(value any, typ reflect.Type) bool {
+	if typ.Kind() == reflect.Pointer {
+		return value == nil || requiredFields(value, typ.Elem())
+	}
+	if typ.Kind() == reflect.Slice {
+		if value == nil {
+			return true
+		}
+		rows, ok := value.([]any)
+		if !ok {
+			return false
+		}
+		for _, row := range rows {
+			if !requiredFields(row, typ.Elem()) {
+				return false
+			}
+		}
+		return true
+	}
+	if typ.Kind() != reflect.Struct {
+		return value != nil
+	}
+	object, ok := value.(map[string]any)
+	if !ok {
+		return false
+	}
+	for i := 0; i < typ.NumField(); i++ {
+		field := typ.Field(i)
+		tag := field.Tag.Get("json")
+		parts := strings.Split(tag, ",")
+		if field.PkgPath != "" || parts[0] == "-" {
+			continue
+		}
+		name := parts[0]
+		if name == "" {
+			name = field.Name
+		}
+		item, present := object[name]
+		if !present && strings.Contains(tag, ",omitempty") {
+			continue
+		}
+		if !present || !requiredFields(item, field.Type) {
+			return false
+		}
+	}
+	return true
 }
 
 func keys(d *json.Decoder, depth int) error {

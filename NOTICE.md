@@ -7,7 +7,7 @@ The owner-policy separation and refusal cases originate in the
 [`fullsend-ai/auto-merge`](https://github.com/fullsend-ai/auto-merge) integration lab,
 whose deployed reference at creation was commit
 `3b529bb9128438c71218a602fc7a746b0be092a2`. This repository implements a smaller,
-fixture-only shared core; it does not copy that repository's live merge writer,
+read-only shared core without merge authority; it does not copy that repository's live merge writer,
 credentials, internal operational data or historic workflow artifacts.
 
 Native assessment execution uses

@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+
 package integration
 
 import (
@@ -35,6 +36,7 @@ func TestCandidateRequiresEveryControlAndJudge(t *testing.T) {
 		}
 	}
 }
+
 func TestCandidateDoesNotAcceptFixtureAsCollectorEvidence(t *testing.T) {
 	b, e := baseline(t, "github", "clean")
 	if _, err := EvaluateCandidate(b, e, at()); err == nil {

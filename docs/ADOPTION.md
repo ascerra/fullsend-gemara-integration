@@ -2,7 +2,8 @@
 
 ## Shared integration
 
-This repository owns the five control definitions, common Gemara policy, typed
+This repository owns the five candidate controls and experimental REVIEW-QUALITY
+control, their Gemara policies, typed
 evidence contract, evaluator, fixture normalizers, and tests. Future official
 Review publication helpers and forge adapters belong here too. There is no
 separate plugin system or custom Fullsend runtime.
@@ -65,7 +66,7 @@ substitute for it. These are fixture normalizers, not live API clients.
 The evaluator checks the subject, binding/policy digests, observation freshness,
 publication metadata, finding state, check results, scope and protection claims.
 It runs real SDK assessments and emits a native EvaluationLog. `EVIDENCE-CURRENT`
-means coherent synthetic metadata here, not proof that a live forge authenticated it.
+means coherent normalized metadata here, not proof that a live forge authenticated it.
 
 Live adapters must establish authenticated producer/run/artifact identity and
 revision binding before evaluation. They must reject raw MR/PR text as evidence,
@@ -75,7 +76,8 @@ because this fixture contract contains no authenticated disposition proof.
 
 Final target freshness, required gate enforcement, cumulative merge-result
 validation, and immediate pre-write revalidation belong at the enforcement
-boundary. This library has no network credentials or merge operation. Every
+boundary. The evaluator has no network credentials or merge operation; the
+optional MLflow collector separately reads reader credentials from its environment. Every
 current output explicitly says `authorization: none` and `mutation_permitted: false`.
 
 ## GitHub adoption
@@ -112,3 +114,11 @@ binding alone is insufficient. The current fixture expects merge-train protectio
 but proves neither its availability nor its enforcement on a real project.
 
 No GitLab project is modified or contacted by this repository's tests.
+
+## Experimental quality requirement
+
+[REVIEW-QUALITY](REVIEW-QUALITY.md) documents `check-judge` and `assess-candidate`.
+The latter requires every candidate control AND the quality check. Neither
+command authenticates its input or authorizes merging. Consumers must bind
+collector origin, exact input/configuration digests and current subject through
+a protected channel before enforcement; a self-labelled JSON file is insufficient.

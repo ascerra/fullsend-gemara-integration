@@ -7,7 +7,10 @@
 - GitHub/GitLab fixture parity with identical shared artifact digests.
 - Guard tests for revision, policy, identity, freshness, scope, checks, findings,
   owner authorization and protection changes.
-- Explicit fixture-only authority; no live writer or implicit deployment.
+- Separate fixture and caller-authenticated collector-observation entry points;
+  neither has merge authority, a live writer or implicit deployment.
+- Experimental REVIEW-QUALITY policy, bounded MLflow reader and required
+  AND-composition with all five candidate controls. See [quality policy](REVIEW-QUALITY.md).
 
 ## Next: prove the normal Fullsend baseline
 
