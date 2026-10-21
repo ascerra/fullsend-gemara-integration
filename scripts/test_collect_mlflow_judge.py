@@ -1,0 +1,118 @@
+# SPDX-License-Identifier: Apache-2.0
+import copy
+from datetime import datetime, timezone
+import importlib.util
+from pathlib import Path
+import unittest
+
+spec = importlib.util.spec_from_file_location(
+    "collector", Path(__file__).with_name("collect_mlflow_judge.py")
+)
+collector = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(collector)
+
+
+class JudgeCollectorTests(unittest.TestCase):
+    def setUp(self):
+        self.now = datetime(2026, 10, 20, tzinfo=timezone.utc)
+        self.binding = dict(
+            schema_version="judge-binding/v1",
+            experiment_id="1",
+            scorer="review_correctly_approved",
+            source_id="synthetic.judge",
+            lookback_days=365,
+        )
+        self.row = dict(
+            trace_id="synthetic-trace-1",
+            trace_location={"mlflow_experiment": {"experiment_id": "1"}},
+            request_time="2026-10-19T00:00:00Z",
+            state="OK",
+            assessments=[
+                dict(
+                    assessment_id="synthetic-assessment-1",
+                    assessment_name="review_correctly_approved",
+                    source={"source_type": "LLM_JUDGE", "source_id": "synthetic.judge"},
+                    valid=True,
+                    feedback={"value": 1.0},
+                    last_update_time="2026-10-19T01:00:00Z",
+                    rationale="SYNTHETIC_PRIVATE_PROSE",
+                )
+            ],
+        )
+
+    def collect(self, pages):
+        iterator = iter(pages)
+        return collector.collect(self.binding, self.now, lambda _: next(iterator))
+
+    def test_complete_paginated_source_filtered_aggregate_without_prose(self):
+        second = copy.deepcopy(self.row)
+        second["trace_id"] = "synthetic-trace-2"
+        second["assessments"][0]["feedback"]["value"] = 0
+        result = self.collect(
+            [{"traces": [self.row], "next_page_token": "page2"}, {"traces": [second]}]
+        )
+        self.assertEqual(
+            (result["passed"], result["total"], result["invalid"], result["complete"]),
+            (1, 2, 0, True),
+        )
+        self.assertNotIn("SYNTHETIC_PRIVATE_PROSE", str(result))
+        self.assertNotIn("synthetic-trace-1", str(result))
+        self.assertEqual(result["authorization"], "none")
+        self.assertFalse(result["mutation_permitted"])
+
+    def test_invalid_or_duplicate_matching_scores_cannot_inflate_rate(self):
+        for value in [True, "1", 0.5, float("nan"), -1]:
+            with self.subTest(value=value):
+                row = copy.deepcopy(self.row)
+                row["assessments"][0]["feedback"]["value"] = value
+                result = self.collect([{"traces": [row]}])
+                self.assertEqual((result["total"], result["invalid"]), (0, 1))
+        self.row["assessments"] *= 2
+        result = self.collect([{"traces": [self.row]}])
+        self.assertEqual((result["total"], result["invalid"]), (0, 1))
+
+    def test_wrong_sources_and_invalidated_assessments_are_excluded(self):
+        for field in ["source", "valid"]:
+            with self.subTest(field=field):
+                row = copy.deepcopy(self.row)
+                row["assessments"][0][field] = (
+                    {"source_type": "LLM_JUDGE", "source_id": "other"}
+                    if field == "source"
+                    else False
+                )
+                r = self.collect([{"traces": [row]}])
+                self.assertEqual((r["total"], r["excluded_other_sources"]), (0, 1))
+
+    def test_duplicate_trace_pagination_cycle_wrong_experiment_and_window_reject(self):
+        with self.assertRaisesRegex(ValueError, "duplicate_trace"):
+            self.collect(
+                [
+                    {"traces": [self.row], "next_page_token": "page2"},
+                    {"traces": [self.row]},
+                ]
+            )
+        with self.assertRaisesRegex(ValueError, "pagination_cycle"):
+            self.collect([{"traces": [], "next_page_token": "page2"}] * 2)
+        row = copy.deepcopy(self.row)
+        row["trace_location"]["mlflow_experiment"]["experiment_id"] = "2"
+        with self.assertRaisesRegex(ValueError, "wrong_experiment"):
+            self.collect([{"traces": [row]}])
+        self.row["request_time"] = "2020-01-01T00:00:00Z"
+        with self.assertRaisesRegex(ValueError, "trace_outside_window"):
+            self.collect([{"traces": [self.row]}])
+
+    def test_page_limit_is_incomplete_and_not_a_passing_subset(self):
+        count = 0
+
+        def fetch(_):
+            nonlocal count
+            count += 1
+            return {"traces": [], "next_page_token": str(count)}
+
+        result = collector.collect(self.binding, self.now, fetch)
+        self.assertFalse(result["complete"])
+        self.assertEqual(count, 50)
+
+
+if __name__ == "__main__":
+    unittest.main()

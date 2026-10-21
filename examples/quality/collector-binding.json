@@ -1,0 +1,8 @@
+{
+  "schema_version": "judge-binding/v1",
+  "endpoint": "https://mlflow.example.test",
+  "experiment_id": "1",
+  "scorer": "review_correctly_approved",
+  "source_id": "synthetic.judge",
+  "lookback_days": 365
+}

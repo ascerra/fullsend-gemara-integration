@@ -1,0 +1,67 @@
+{
+  "title": "Experimental review quality policy",
+  "metadata": {
+    "id": "review-quality-policy",
+    "type": "Policy",
+    "gemara-version": "1.5.0",
+    "version": "0.1.0",
+    "description": "Shared assessment definitions; consuming owners supply repository bindings.",
+    "author": {
+      "id": "fullsend-gemara-integration",
+      "name": "Fullsend Gemara integration",
+      "type": "Software Assisted"
+    },
+    "draft": true,
+    "mapping-references": [
+      {
+        "id": "review-quality-controls",
+        "title": "Review agent quality requirement",
+        "version": "0.1.0"
+      }
+    ]
+  },
+  "contacts": {
+    "responsible": [
+      {
+        "name": "Integration maintainers"
+      }
+    ],
+    "accountable": [
+      {
+        "name": "Consuming repository owner"
+      }
+    ]
+  },
+  "scope": {
+    "in": {
+      "technologies": [
+        "source-control"
+      ]
+    }
+  },
+  "imports": {
+    "catalogs": [
+      {
+        "reference-id": "review-quality-controls"
+      }
+    ]
+  },
+  "adherence": {
+    "assessment-plans": [
+      {
+        "id": "review-quality-plan",
+        "requirement-id": "REVIEW-QUALITY-1",
+        "frequency": "every evaluation",
+        "evaluation-methods": [
+          {
+            "id": "evaluate-REVIEW-QUALITY",
+            "type": "Intent",
+            "mode": "Automated",
+            "required": true
+          }
+        ],
+        "evidence-requirements": "Complete authenticated source-bound binary assessment aggregate; explicit time window, sample count, freshness and record digest. No trace prose."
+      }
+    ]
+  }
+}

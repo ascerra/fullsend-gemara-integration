@@ -117,3 +117,18 @@ func TestCLIReviewCheckHoldsMissingRisk(t *testing.T) {
 		t.Fatalf("missing risk failed to hold: %s %v", out, err)
 	}
 }
+
+func TestCLIQualityExactThresholdAndHold(t *testing.T) {
+	for _, tc := range []struct {
+		file, decision string
+		held           bool
+	}{{"below-threshold", "hold", true}, {"at-threshold", "eligible", false}} {
+		out, err := invoke(t, "check-judge", "--policy", "../../examples/quality/policy.json", "--observation", "../../examples/quality/"+tc.file+".json", "--at", "2026-10-20T00:00:00Z")
+		if (err != nil) != tc.held || !strings.Contains(out, `"decision":"`+tc.decision+`"`) || !strings.Contains(out, `"native_evaluation"`) {
+			t.Fatalf("unexpected quality CLI: %s %v", out, err)
+		}
+	}
+	if _, err := invoke(t, "check-judge", "--policy", "../../examples/quality/policy.json", "--observation", "../../examples/quality/at-threshold.json"); err == nil {
+		t.Fatal("implicit clock accepted")
+	}
+}

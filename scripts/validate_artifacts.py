@@ -95,7 +95,8 @@ def main():
     results = json.loads(raw)
     if len(results) != 18:
         raise ValueError("incomplete_demo_results")
-    inputs = [(ROOT / "policy/catalog.json", "ControlCatalog"), (ROOT / "policy/common.json", "Policy")]
+    inputs = [(ROOT / "policy/catalog.json", "ControlCatalog"), (ROOT / "policy/common.json", "Policy"),
+              (ROOT / "policy/judge-catalog.json", "ControlCatalog"), (ROOT / "policy/judge-policy.json", "Policy")]
     with tempfile.TemporaryDirectory(prefix="gemara-schema-") as directory:
         for i, item in enumerate(results):
             report = item["report"]

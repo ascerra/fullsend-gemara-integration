@@ -41,6 +41,7 @@ jobs:
           test -z "$(gofmt -l .)"
           go test ./...
           go vet ./...
+          python3 -m unittest discover -s scripts -p 'test_*.py'
       - name: Run paired fixture demonstrations
         run: |
           mkdir -p out

@@ -1,0 +1,11 @@
+{
+  "schema_version": "judge-policy/v1",
+  "scorer": "review_correctly_approved",
+  "source_id": "synthetic.judge",
+  "experiment_id": "1",
+  "lookback_days": 365,
+  "minimum_samples": 100,
+  "minimum_basis_points": 9900,
+  "maximum_snapshot_age_seconds": 900,
+  "maximum_score_age_seconds": 604800
+}

@@ -56,7 +56,7 @@ func evaluate(binding, fixture, scenario string, now time.Time) (integration.Rep
 
 func run() error {
 	if len(os.Args) < 2 {
-		return fmt.Errorf("usage: gemara-owner demo | evaluate-fixture | project-review | check-review (use -h for flags)")
+		return fmt.Errorf("usage: gemara-owner demo | evaluate-fixture | project-review | check-review | check-judge (use -h for flags)")
 	}
 	switch os.Args[1] {
 	case "project-review":
@@ -110,6 +110,94 @@ func run() error {
 			return err
 		}
 		if r.Decision != "eligible" {
+			return fmt.Errorf("policy_held")
+		}
+		return nil
+
+	case "assess-candidate":
+		fs := flag.NewFlagSet("assess-candidate", flag.ContinueOnError)
+		binding := fs.String("binding", "", "trusted owner binding")
+		evidence := fs.String("observation", "", "trusted collector observation")
+		policy := fs.String("judge-policy", "", "trusted required quality policy")
+		quality := fs.String("judge-observation", "", "authenticated quality aggregate")
+		at := fs.String("at", "", "explicit assessment time")
+		if err := fs.Parse(os.Args[2:]); err != nil {
+			return err
+		}
+		if fs.NArg() != 0 {
+			return fmt.Errorf("unexpected_arguments")
+		}
+		now, err := time.Parse(time.RFC3339, *at)
+		if err != nil {
+			return fmt.Errorf("explicit_time_required")
+		}
+		var b integration.Binding
+		var e integration.Evidence
+		var p integration.JudgePolicy
+		var o integration.JudgeObservation
+		for _, item := range []struct {
+			path   string
+			target any
+		}{{*binding, &b}, {*evidence, &e}, {*policy, &p}, {*quality, &o}} {
+			raw, err := read(item.path)
+			if err != nil {
+				return err
+			}
+			if err = integration.Decode(raw, item.target); err != nil {
+				return err
+			}
+		}
+		report, err := integration.AssessCandidate(b, e, p, o, now)
+		if err != nil {
+			return err
+		}
+		if err = json.NewEncoder(os.Stdout).Encode(report); err != nil {
+			return err
+		}
+		if report.Decision != "eligible" {
+			return fmt.Errorf("policy_held")
+		}
+		return nil
+
+	case "check-judge":
+		fs := flag.NewFlagSet("check-judge", flag.ContinueOnError)
+		policy := fs.String("policy", "", "trusted consumer quality policy")
+		observation := fs.String("observation", "", "authenticated aggregate observation")
+		at := fs.String("at", "", "explicit assessment time")
+		if err := fs.Parse(os.Args[2:]); err != nil {
+			return err
+		}
+		if fs.NArg() != 0 {
+			return fmt.Errorf("unexpected_arguments")
+		}
+		now, err := time.Parse(time.RFC3339, *at)
+		if err != nil {
+			return fmt.Errorf("explicit_time_required")
+		}
+		raw, err := read(*policy)
+		if err != nil {
+			return err
+		}
+		var p integration.JudgePolicy
+		if err = integration.Decode(raw, &p); err != nil {
+			return err
+		}
+		raw, err = read(*observation)
+		if err != nil {
+			return err
+		}
+		var o integration.JudgeObservation
+		if err = integration.Decode(raw, &o); err != nil {
+			return err
+		}
+		report, err := integration.CheckJudge(p, o, now)
+		if err != nil {
+			return err
+		}
+		if err = json.NewEncoder(os.Stdout).Encode(report); err != nil {
+			return err
+		}
+		if report.Decision != "eligible" {
 			return fmt.Errorf("policy_held")
 		}
 		return nil

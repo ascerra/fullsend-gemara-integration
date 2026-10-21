@@ -1,0 +1,19 @@
+{
+  "schema_version": "judge-observation/v1",
+  "scorer": "review_correctly_approved",
+  "source_id": "synthetic.judge",
+  "experiment_id": "1",
+  "cohort": "experiment-scored-approvals",
+  "window_start": "2025-10-20T00:00:00Z",
+  "window_end": "2026-10-20T00:00:00Z",
+  "collected_at": "2026-10-20T00:00:00Z",
+  "latest_score_at": "2026-10-19T00:00:00Z",
+  "passed": 94,
+  "total": 100,
+  "invalid": 0,
+  "excluded_other_sources": 0,
+  "complete": true,
+  "records_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "authorization": "none",
+  "mutation_permitted": false
+}

@@ -121,3 +121,15 @@ publication extension, implement authenticated GitHub evidence collection, then
 prove a hosted pass and hold. GitLab fixtures prove shared policy behavior;
 GitLab authentication, required merge gating and protected merging remain future
 work. [Implementation roadmap](docs/ROADMAP.md).
+
+## Experimental fleet quality check
+
+The optional [review quality requirement](docs/REVIEW-QUALITY.md) evaluates the
+existing `review_correctly_approved` aggregate against an owner threshold. It
+holds below threshold or on missing/stale/insufficient evidence, and produces a
+native Gemara assessment. It does not run a judge or authorize merging.
+
+`assess-candidate` composes the five candidate controls with the required quality
+check. It accepts normalized `collector-observation` data, never a raw synthetic
+fixture. This entry point does not authenticate that data or authorize a writer;
+the consumer must implement trusted collection and protected enforcement.

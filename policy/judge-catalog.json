@@ -1,0 +1,49 @@
+{
+  "title": "Review agent quality requirement",
+  "metadata": {
+    "id": "review-quality-controls",
+    "type": "ControlCatalog",
+    "gemara-version": "1.5.0",
+    "version": "0.1.0",
+    "description": "Experimental fleet-level quality requirement; no merge authority.",
+    "author": {
+      "id": "fullsend-gemara-integration",
+      "name": "Fullsend Gemara integration",
+      "type": "Software Assisted"
+    },
+    "draft": true,
+    "applicability-groups": [
+      {
+        "id": "candidate",
+        "title": "Candidate",
+        "description": "Candidate evaluation"
+      }
+    ]
+  },
+  "groups": [
+    {
+      "id": "candidate",
+      "title": "Candidate eligibility",
+      "description": "Owner-controlled candidate requirements"
+    }
+  ],
+  "controls": [
+    {
+      "id": "REVIEW-QUALITY",
+      "title": "Review approval quality meets owner threshold",
+      "objective": "The observed judged-approval pass rate MUST meet the owner threshold, with sufficient, complete and fresh source-bound evidence.",
+      "group": "candidate",
+      "state": "Active",
+      "assessment-requirements": [
+        {
+          "id": "REVIEW-QUALITY-1",
+          "text": "The observed judged-approval pass rate MUST meet the owner threshold, with sufficient, complete and fresh source-bound evidence.",
+          "applicability": [
+            "candidate"
+          ],
+          "state": "Active"
+        }
+      ]
+    }
+  ]
+}

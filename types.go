@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package integration evaluates owner requirements using the Gemara SDK.
-// This initial version accepts synthetic fixture projections only and has no writer.
+// Collectors authenticate observations externally; this package has no writer.
 package integration
 
 import (
