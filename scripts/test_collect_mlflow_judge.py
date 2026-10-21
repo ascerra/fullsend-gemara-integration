@@ -136,6 +136,18 @@ class JudgeCollectorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "trace_outside_window"):
             self.collect([{"traces": [self.row]}])
 
+    def test_malformed_later_page_cannot_look_like_complete_population(self):
+        for bad in [
+            {"error_code": "synthetic_failure"},
+            {"traces": None},
+            {"traces": {}},
+            {"traces": [], "next_page_token": 0},
+        ]:
+            with self.subTest(page=bad), self.assertRaisesRegex(
+                ValueError, "invalid_search_page|invalid_page_token"
+            ):
+                self.collect([{"traces": [self.row], "next_page_token": "second"}, bad])
+
     def test_page_limit_is_incomplete_and_not_a_passing_subset(self):
         count = 0
 

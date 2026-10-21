@@ -60,7 +60,17 @@ def collect(binding, now, fetch):
     complete = False
     for _ in range(50):
         page = fetch(body)
-        for trace in page.get("traces", []):
+        require(
+            isinstance(page, dict)
+            and isinstance(page.get("traces"), list)
+            and len(page["traces"]) <= 100,
+            "invalid_search_page",
+        )
+        require(
+            "next_page_token" not in page or isinstance(page["next_page_token"], str),
+            "invalid_page_token",
+        )
+        for trace in page["traces"]:
             trace_id = trace["trace_id"]
             require(trace_id not in seen, "duplicate_trace")
             seen.add(trace_id)
